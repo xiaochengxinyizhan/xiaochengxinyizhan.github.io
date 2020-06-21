@@ -841,6 +841,199 @@ A: 不行，String没有实现Iterable接口。
 
 页码：page104
 
+
+
+## 1.4、算法分析
+
+我的程序会运行多长时间，为什么我的程序耗尽所有的内存。
+
+### 1.4.1、科学方法
+
+* 细致的观察真实世界的特点，通常还要有精确的测量
+* 根据观察结果提出假设模型
+* 根据模型预测未来的事件
+* 继续观察并核实预测的准确性
+* 如此反复直到确认预测和观察一致
+
+### 1.4.2、观察
+
+* 如何定量测量程序的运行时间
+
+#### 1.4.2.1、比如求三数之和为0的元组的数量
+
+```java
+/******************************************************************************
+ *  Compilation:  javac ThreeSum.java
+ *  Execution:    java ThreeSum input.txt
+ *  Dependencies: In.java StdOut.java Stopwatch.java
+ *  Data files:   https://algs4.cs.princeton.edu/14analysis/1Kints.txt
+ *                https://algs4.cs.princeton.edu/14analysis/2Kints.txt
+ *                https://algs4.cs.princeton.edu/14analysis/4Kints.txt
+ *                https://algs4.cs.princeton.edu/14analysis/8Kints.txt
+ *                https://algs4.cs.princeton.edu/14analysis/16Kints.txt
+ *                https://algs4.cs.princeton.edu/14analysis/32Kints.txt
+ *                https://algs4.cs.princeton.edu/14analysis/1Mints.txt
+ *
+ *  A program with cubic running time. Reads n integers
+ *  and counts the number of triples that sum to exactly 0
+ *  (ignoring integer overflow).
+ *
+ *  % java ThreeSum 1Kints.txt 
+ *  70
+ *
+ *  % java ThreeSum 2Kints.txt 
+ *  528
+ *
+ *  % java ThreeSum 4Kints.txt 
+ *  4039
+ *
+ ******************************************************************************/
+
+/**
+ *  The {@code ThreeSum} class provides static methods for counting
+ *  and printing the number of triples in an array of integers that sum to 0
+ *  (ignoring integer overflow).
+ *  <p>
+ *  This implementation uses a triply nested loop and takes proportional to n^3,
+ *  where n is the number of integers.
+ *  <p>
+ *  For additional documentation, see <a href="https://algs4.cs.princeton.edu/14analysis">Section 1.4</a> of
+ *  <i>Algorithms, 4th Edition</i> by Robert Sedgewick and Kevin Wayne.
+ *
+ *  @author Robert Sedgewick
+ *  @author Kevin Wayne
+ */
+public class ThreeSum {
+
+    // Do not instantiate.
+    private ThreeSum() { }
+
+    /**
+     * Prints to standard output the (i, j, k) with {@code i < j < k}
+     * such that {@code a[i] + a[j] + a[k] == 0}.
+     *
+     * @param a the array of integers
+     */
+    public static void printAll(int[] a) {
+        int n = a.length;
+        for (int i = 0; i < n; i++) {
+            for (int j = i+1; j < n; j++) {
+                for (int k = j+1; k < n; k++) {
+                    if (a[i] + a[j] + a[k] == 0) {
+                        StdOut.println(a[i] + " " + a[j] + " " + a[k]);
+                    }
+                }
+            }
+        }
+    } 
+
+    /**
+     * Returns the number of triples (i, j, k) with {@code i < j < k}
+     * such that {@code a[i] + a[j] + a[k] == 0}.
+     *
+     * @param  a the array of integers
+     * @return the number of triples (i, j, k) with {@code i < j < k}
+     *         such that {@code a[i] + a[j] + a[k] == 0}
+     */
+    public static int count(int[] a) {
+        int n = a.length;
+        int count = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = i+1; j < n; j++) {
+                for (int k = j+1; k < n; k++) {
+                    if (a[i] + a[j] + a[k] == 0) {
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+    } 
+
+    /**
+     * Reads in a sequence of integers from a file, specified as a command-line argument;
+     * counts the number of triples sum to exactly zero; prints out the time to perform
+     * the computation.
+     *
+     * @param args the command-line arguments
+     */
+    public static void main(String[] args)  { 
+        In in = new In(args[0]);
+        int[] a = in.readAllInts();
+
+        Stopwatch timer = new Stopwatch();
+        int count = count(a);
+        StdOut.println("elapsed time = " + timer.elapsedTime());
+        StdOut.println(count);
+    } 
+} 
+
+```
+
+#### 1.4.2.2、计时器
+
+#### 1.4.2.3、实验数据的分析
+
+![image-20200621211733792](/Users/xiaochengliu/Library/Application Support/typora-user-images/image-20200621211733792.png)
+
+
+
+### 1.4.3、数学模型
+
+一个程序运行的总时间主要和2点有关：
+
+* 执行每条语句的耗时（取决于计算机，Java编译器和操作系统）
+* 执行每条语句的频率（程序本身和输入）
+
+#### 1.4.3.1、近似
+
+定义：我们用~f(N)表示所有随着N的增大除以f(N)的结果趋近于1的函数。我们用g(N)~f(N)表示g(N)/f(N)随着N的增大趋近于1.
+
+#### 1.4.3.2、近似运行时间
+
+![image-20200621212510254](/Users/xiaochengliu/Library/Application Support/typora-user-images/image-20200621212510254.png)
+
+#### 1.4.3.3、对增长数量级的猜想
+
+程序运行的时间分析，将语句块拆分，运行时间以s来标记，根据执行的频率，来计算总时间。
+
+#### 1.4.3.4、算法的分析
+
+经典算法的性能理论大部分都发表数十年前，但是仍然适用于今天的计算机。
+
+所以我们需要抽象世界中的一个Java程序和真实世界中的运行联系起来。
+
+#### 1.4.3.5、成本模型
+
+可以通过数学的成本模型来评估算法的性质。这个模型定义了我们所研究的算法中的基本操作。
+
+比如3-sum问题的成本模型是我们访问数组元素的次数。
+
+#### 1.4.3.6、总结
+
+对于大多数程序，得到其运行时间的数学模型所需的步骤如下：
+
+* 确定输入模型，定位问题的规模
+* 识别内循环
+* 根据内循环中的操作确定成本模型
+* 对于给定的输入，判断这些操作的执行频率，这可能需要用数学分析。
+
+比如二分查找，输入模型是是大小为N的数组a[],内循环是一个while循环中的所有语句，成本模型是比较操作（比较2个数组元素的值），所以我们能判断是比较次数最多是logN+1。
+
+比如白名单，输入模型是白名单的大小N和由标准输入得到的M个整数，且我们假设M>>N内循环是一个while循环中的所有语句，成本模型是比较操作（承自二分查找），所以我们比较次数最多为M（logN+1） 
+
+### 1.4.4、增长数量级
+
+#### 1.4.4.1、常数级别
+
+完成任务所需的操作次数一定，因此运行时间不依赖于N。大多数的java操作所需的时间均为常数。
+
+#### 1.4.4.2、对数级别
+
+运行时间的增长数量级为对数的程序仅为常数时间的程序稍慢。经典例子就是二分查找。对数的底数和增长的数量无关（因为不同的底数仅相当于一个常数因子），所以我们说的对数级别一般使用logN
+
+
+
 # 二、排序
 
 
